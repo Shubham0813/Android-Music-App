@@ -11,7 +11,7 @@
         android:id="@+id/loadSongFromLibraryButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="loadSongFromLibrary"
+        android:onClick="onclick_loadSongFromLibrary"
         android:text="Choose audio" />
 
     <LinearLayout
@@ -74,6 +74,6 @@
         android:id="@+id/btnLoadSaved"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="loadSavedAudios"
+        android:onClick="onclick_loadSavedAudios"
         android:text="Load Saved" />
 </LinearLayout>

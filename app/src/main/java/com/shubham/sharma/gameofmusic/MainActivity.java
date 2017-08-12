@@ -6,14 +6,13 @@ import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,15 +55,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initSugarDB();
 
         ButterKnife.bind(this);
+
+        initMusicComponents();
+    }
+
+    private void initMusicComponents() {
         mPlayButton.setOnClickListener(this);
-
         mPlayer = new MediaPlayer();
-
         mAudioList = new ArrayList<>();
         mMetaDataRetreiver = new MediaMetadataRetriever();
     }
-
-
 
     private void initSugarDB() {
         SugarDb db = new SugarDb(this);
@@ -77,10 +77,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
     }
 
-    public void loadSavedAudios(View view) {
-
+    public void onclick_loadSavedAudios(View view) {
         List<Audio> audios = Audio.listAll(Audio.class);
-
         TextView txvLibrary = (TextView) findViewById(R.id.txvLibrary);
 
         for (Audio audio: audios) {
@@ -88,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void loadSongFromLibrary(View view) {
+    public void onclick_loadSongFromLibrary(View view) {
 
         if(ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -108,25 +106,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.setType("audio/mpeg");
         startActivityForResult(Intent.createChooser(intent, "Choose audio file"), REQUEST_CODE_PICK_SOUND_FILE);
     }
-
-    private void startPlay(String file) {
-        Log.i("Selected: ", file);
-        mPlayer.stop();
-        mPlayer.reset();
-
-        try {
-            mPlayer.setDataSource(this, mCurrentAudio.getData());
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -159,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                        );
+                );
 
                 audio.save();
 
@@ -183,6 +162,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             default:
                 break;
+        }
+    }
+
+    private void startPlay(String file) {
+        Log.i("Selected: ", file);
+        mPlayer.stop();
+        mPlayer.reset();
+
+        try {
+            mPlayer.setDataSource(this, mCurrentAudio.getData());
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
