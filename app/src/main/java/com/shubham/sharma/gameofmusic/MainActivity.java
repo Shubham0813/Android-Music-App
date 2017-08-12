@@ -131,19 +131,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Uri audioFileUri = data.getData();
 
                 mMetaDataRetreiver.setDataSource(this, audioFileUri);
-
                 Audio audio = new Audio( audioFileUri,
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-                        mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                        );
+                        mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
+                        mMetaDataRetreiver.getEmbeddedPicture(),
+                        mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+
                 mCurrentAudio = audio;
                 mAudioList.add(audio);
 
-
                 mSelectedItemTextView.setText(audioFileUri.toString());
 
-                Log.d(LOG_TAG, mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+                //Log.d(LOG_TAG, audio.getTitle());
+                Log.d(LOG_TAG, audio.getDuration());
             }
         }
     }
@@ -152,8 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.playButton:
-                mPlayer.start();
-                startPlay(mCurrentAudio.toString());
+                Intent intent = new Intent(this, MusicPlayerActivity.class);
+                intent.putExtra("Song", mCurrentAudio);
+                startActivity(intent);
                 break;
             default:
                 break;
