@@ -1,19 +1,11 @@
 package com.shubham.sharma.gameofmusic;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.media.MediaMetadata;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,13 +13,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orm.SchemaGenerator;
+import com.orm.SugarContext;
+import com.orm.SugarDb;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initSugarDB();
+
         ButterKnife.bind(this);
         mPlayButton.setOnClickListener(this);
 
@@ -63,6 +62,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mAudioList = new ArrayList<>();
         mMetaDataRetreiver = new MediaMetadataRetriever();
+    }
+
+
+
+    private void initSugarDB() {
+        SugarDb db = new SugarDb(this);
+        db.onCreate(db.getDB());
+
+        SugarContext.terminate();
+        SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
+        schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
+        SugarContext.init(getApplicationContext());
+        schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
+    }
+
+    public void loadSavedAudios(View view) {
+
+        List<Audio> audios = Audio.listAll(Audio.class);
+
+        TextView txvLibrary = (TextView) findViewById(R.id.txvLibrary);
+
+        for (Audio audio: audios) {
+            txvLibrary.append("\n" + audio.toString());
+        }
     }
 
     public void loadSongFromLibrary(View view) {
@@ -137,13 +160,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
                         );
+
+                audio.save();
+
                 mCurrentAudio = audio;
                 mAudioList.add(audio);
 
 
                 mSelectedItemTextView.setText(audioFileUri.toString());
 
-                Log.d(LOG_TAG, mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+                //Log.d(LOG_TAG, mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
             }
         }
     }

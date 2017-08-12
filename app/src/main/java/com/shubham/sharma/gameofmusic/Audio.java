@@ -2,24 +2,29 @@ package com.shubham.sharma.gameofmusic;
 
 import android.net.Uri;
 
+import com.orm.SugarRecord;
+
 import java.io.Serializable;
 
-/**
- * Created by Shubham on 2017-08-11.
- */
-
-public class Audio implements Serializable {
+public class Audio extends SugarRecord implements Serializable {
 
     private Uri data;
     private String title;
     private String album;
     private String artist;
 
+    public Audio(){}
+
     public Audio(Uri data, String title, String album, String artist) {
         this.data = data;
         this.title = title;
         this.album = album;
         this.artist = artist;
+    }
+
+    @Override
+    public String toString() {
+        return title;
     }
 
     public Uri getData() {

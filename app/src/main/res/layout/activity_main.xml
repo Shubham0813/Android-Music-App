@@ -63,4 +63,17 @@
                 android:src="@android:drawable/ic_media_next" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/txvLibrary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="empty" />
+
+    <Button
+        android:id="@+id/btnLoadSaved"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="loadSavedAudios"
+        android:text="Load Saved" />
 </LinearLayout>
