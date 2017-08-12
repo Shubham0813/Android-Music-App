@@ -79,11 +79,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onclick_loadSavedAudios(View view) {
         List<Audio> audios = Audio.listAll(Audio.class);
-        TextView txvLibrary = (TextView) findViewById(R.id.txvLibrary);
-
-        for (Audio audio: audios) {
-            txvLibrary.append("\n" + audio.toString());
-        }
     }
 
     public void onclick_loadSongFromLibrary(View view) {
