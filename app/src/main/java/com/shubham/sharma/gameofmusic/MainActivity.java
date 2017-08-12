@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,34 +12,22 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.orm.SchemaGenerator;
 import com.orm.SugarContext;
 import com.orm.SugarDb;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-    @BindView(R.id.selectedItemTextView)
-    TextView mSelectedItemTextView;
-
-    @BindView(R.id.playButton)
-    ImageButton mPlayButton;
+public class MainActivity extends AppCompatActivity {
 
     private Audio mCurrentAudio;
     private ArrayList<Audio> mAudioList;
-    private MediaPlayer mPlayer;
 
     private MediaMetadataRetriever mMetaDataRetreiver;
 
@@ -63,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initMusicComponents() {
-        mPlayButton.setOnClickListener(this);
-        mPlayer = new MediaPlayer();
         mAudioList = new ArrayList<>();
         mMetaDataRetreiver = new MediaMetadataRetriever();
     }
@@ -158,38 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 mCurrentAudio = audio;
                 mAudioList.add(audio);
-
-
-                mSelectedItemTextView.setText(audioFileUri.toString());
-
-                //Log.d(LOG_TAG, mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
             }
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.playButton:
-                mPlayer.start();
-                startPlay(mCurrentAudio.toString());
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void startPlay(String file) {
-        Log.i("Selected: ", file);
-        mPlayer.stop();
-        mPlayer.reset();
-
-        try {
-            mPlayer.setDataSource(this, mCurrentAudio.getData());
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
