@@ -27,7 +27,9 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private Audio mCurrentAudio;
-    private ArrayList<Audio> mAudioList;
+    private List<Audio> mAudioList;
+    private RecyclerView recyclerView;
+    private RecyclerView_Adapter adapter;
 
     private MediaMetadataRetriever mMetaDataRetreiver;
 
@@ -50,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initMusicComponents() {
-        mAudioList = new ArrayList<>();
         mMetaDataRetreiver = new MediaMetadataRetriever();
     }
 
@@ -66,21 +67,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        List<Audio> audioList = Audio.listAll(Audio.class);
+        mAudioList = Audio.listAll(Audio.class);
 
-        if (audioList.size() > 0) {
-            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-            RecyclerView_Adapter adapter = new RecyclerView_Adapter(audioList, getApplication());
+        if (mAudioList.size() > 0) {
+            recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+            adapter = new RecyclerView_Adapter(mAudioList, getApplication());
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            /*
-            recyclerView.addOnItemTouchListener(new CustomTouchListener(this, new onItemClickListener() {
-                @Override
-                public void onClick(View view, int index) {
-                    playAudio(index);
-                }
-            }));*/
+            recyclerView.addOnItemTouchListener(
+                    new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override public void onItemClick(View view, int position) {
+                            Intent intent = new Intent(getApplicationContext(), MusicPlayerActivity.class);
+                            intent.putExtra("Song", mAudioList.get(position));
+                            startActivity(intent);
+                        }
+                    })
+            );
+
 
         }
     }
@@ -132,17 +136,19 @@ public class MainActivity extends AppCompatActivity {
                 Uri audioFileUri = data.getData();
 
                 mMetaDataRetreiver.setDataSource(this, audioFileUri);
-
                 Audio audio = new Audio( audioFileUri,
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM),
-                        mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                        mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
+                        mMetaDataRetreiver.getEmbeddedPicture(),
+                        mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 );
 
                 audio.save();
 
                 mCurrentAudio = audio;
-                mAudioList.add(audio);
+                mAudioList = Audio.listAll(Audio.class);
+                adapter.notifyDataSetChanged();
             }
         }
     }

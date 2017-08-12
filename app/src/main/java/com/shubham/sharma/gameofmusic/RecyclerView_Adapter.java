@@ -1,19 +1,21 @@
 package com.shubham.sharma.gameofmusic;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
 
 public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder> {
 
-    List<Audio> list = Collections.emptyList();
+    List<Audio> list;
     Context context;
 
     public RecyclerView_Adapter(List<Audio> list, Context context) {
@@ -31,7 +33,7 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.title.setText(list.get(position).getTitle());
     }
@@ -59,4 +61,6 @@ class ViewHolder extends RecyclerView.ViewHolder {
         title = (TextView) itemView.findViewById(R.id.title);
         play_pause = (ImageView) itemView.findViewById(R.id.play_pause);
     }
+
+
 }
