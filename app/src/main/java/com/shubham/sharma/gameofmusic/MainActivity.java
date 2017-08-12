@@ -11,6 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         initSugarDB();
+        initRecyclerView();
 
         ButterKnife.bind(this);
 
@@ -77,8 +80,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
     }
 
-    public void onclick_loadSavedAudios(View view) {
-        List<Audio> audios = Audio.listAll(Audio.class);
+    private void initRecyclerView() {
+        List<Audio> audioList = Audio.listAll(Audio.class);
+
+        if (audioList.size() > 0) {
+            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+            RecyclerView_Adapter adapter = new RecyclerView_Adapter(audioList, getApplication());
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            /*
+            recyclerView.addOnItemTouchListener(new CustomTouchListener(this, new onItemClickListener() {
+                @Override
+                public void onClick(View view, int index) {
+                    playAudio(index);
+                }
+            }));*/
+
+        }
     }
 
     public void onclick_loadSongFromLibrary(View view) {
