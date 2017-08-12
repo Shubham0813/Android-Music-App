@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.shubham.sharma.gameofmusic.MainActivity"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/loadSongFromLibraryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="loadSongFromLibrary"
+        android:text="Choose audio" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/screen_background_light"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/selectedItemTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:gravity="center_horizontal"
+            android:text="No file Selected"
+            android:textColor="@android:color/darker_gray" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:paddingBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/screen_background_light"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/previousButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_media_previous" />
+
+            <ImageButton
+                android:id="@+id/playButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_media_play" />
+
+            <ImageButton
+                android:id="@+id/nextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_media_next" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
