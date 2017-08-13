@@ -3,33 +3,13 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu"
-            android:title="Shubham" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu"
-            android:title="Cassidy" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu"
-            android:title="Dalibor" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu"
-            android:title="Burakaran" />
+            android:id="@+id/nav_new_playlist"
+            android:icon="@drawable/ic_allmusic_black_24dp"
+            android:title="New Playlist" />
     </group>
 
-    <item android:title="Create Playlist">
+    <item android:title="Playlists">
         <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu"
-                android:title="New" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu"
-                android:title="Something else..." />
         </menu>
     </item>
 
