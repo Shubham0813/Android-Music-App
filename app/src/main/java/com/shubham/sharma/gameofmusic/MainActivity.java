@@ -3,23 +3,26 @@ package com.shubham.sharma.gameofmusic;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.orm.SchemaGenerator;
 import com.orm.SugarContext;
 import com.orm.SugarDb;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -43,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         initSugarDB();
         initRecyclerView();
 
@@ -53,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initMusicComponents() {
         mMetaDataRetreiver = new MediaMetadataRetriever();
+        ImageView collapsingImageView = (ImageView) findViewById(R.id.collapsingImageView);
+        Drawable image = ResourcesCompat.getDrawable(getResources(), R.drawable.image1, null);
+        collapsingImageView.setImageDrawable(image);
     }
 
     private void initSugarDB() {

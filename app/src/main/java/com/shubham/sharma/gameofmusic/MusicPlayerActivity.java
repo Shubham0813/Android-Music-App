@@ -99,12 +99,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
         ButterKnife.bind(this);
 
-        View decorView = getWindow().getDecorView();
-
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
-
         mPlayDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
         mPauseDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
 
@@ -149,8 +143,14 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void setupMusicDetails(){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        //Bitmap source = BitmapFactory.decodeResource(a.getResources(), path, options);
         mImageView.setImageBitmap( BitmapFactory.decodeByteArray(mAudio.getImage(), 0,
-                mAudio.getImage().length));
+                mAudio.getImage().length, options));
+
+
+
         mTitleView.setText(mAudio.getTitle());
         mArtistView.setText(mAudio.getArtist());
         mAlbumView.setText(mAudio.getAlbum());

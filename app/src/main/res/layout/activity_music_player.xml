@@ -19,6 +19,11 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true">
 
+        <ImageView
+            android:id="@+id/album_cover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/line1"
             android:layout_width="fill_parent"
@@ -154,13 +159,6 @@
         </LinearLayout>
 
     </RelativeLayout>
-
-    <!--<ProgressBar-->
-        <!--android:id="@+id/progressBar1"-->
-        <!--style="?android:attr/progressBarStyleLarge"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerInParent="true" />-->
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
