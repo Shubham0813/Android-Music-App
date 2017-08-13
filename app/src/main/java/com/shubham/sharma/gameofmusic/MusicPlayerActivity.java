@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -42,10 +44,16 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     TextView mEnd;
 
     @BindView(R.id.seekBar1)
-    SeekBar seekBar;
+    SeekBar mSeekBar;
 
-    @BindView(R.id.play_pause)
+    @BindView(R.id.previousButton)
+    ImageView mPreviousButton;
+
+    @BindView(R.id.playPauseButton)
     ImageView mPlayPauseButton;
+
+    @BindView(R.id.nextButton)
+    ImageView mNextButton;
 
     private Audio mAudio;
     private MediaPlayer mMediaPlayer;
@@ -54,7 +62,21 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     private Drawable mPlayDrawable;
     private Drawable mPauseDrawable;
 
+    private Handler mHandler = new Handler();
+
+    private static final int UPDATE_FREQUENCY = 500;
+    private static final int STEP_VALUE = 4000;
+
+    private boolean isSeekBarMoving;
+
     private static final String LOG_TAG = MusicPlayerActivity.class.getCanonicalName();
+
+    private final Runnable updatePositionRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updatePosition();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +84,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_music_player);
 
         ButterKnife.bind(this);
-
-        mMediaPlayer = new MediaPlayer();
 
         mPlayDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
         mPauseDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
@@ -80,16 +100,24 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         double durationInMin = ((double) durationInMS / 1000.0) / 60.0;
         durationInMin = new BigDecimal(Double.toString(durationInMin)).
                 setScale(2, BigDecimal.ROUND_UP).doubleValue();
+
         mStart.setText(R.string.song_start_duration);
         mEnd.setText("" + durationInMin);
 
+        mSeekBar.setOnSeekBarChangeListener(seekBarOnChange);
         mPlayPauseButton.setOnClickListener(this);
+        mPreviousButton.setOnClickListener(this);
 
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setOnCompletionListener(onCompletion);
+        mMediaPlayer.setOnErrorListener(onError);
         startPlay();
     }
 
     private void startPlay() {
         Log.d(LOG_TAG, "playing");
+
+        mSeekBar.setProgress(0);
 
         mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -103,24 +131,99 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // updatePosition();
+        mSeekBar.setMax(mMediaPlayer.getDuration());
+        updatePosition();
         // isStarted = true;
     }
+
+    private void stopPlay() {
+        mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        mPlayPauseButton.setImageResource(android.R.drawable.ic_media_play);
+        mHandler.removeCallbacks(updatePositionRunnable);
+        mSeekBar.setProgress(0);
+        isPlaying = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(updatePositionRunnable);
+        mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        mMediaPlayer.release();
+        mMediaPlayer = null;
+    }
+
+    private MediaPlayer.OnCompletionListener onCompletion = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            stopPlay();
+        }
+    };
+
+    private MediaPlayer.OnErrorListener onError = new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mp, int what, int extra) {
+            return false;
+        }
+    };
+
+
+    private void updatePosition() {
+        mHandler.removeCallbacks(updatePositionRunnable);
+        mSeekBar.setProgress(mMediaPlayer.getCurrentPosition());
+        mHandler.postDelayed(updatePositionRunnable, UPDATE_FREQUENCY);
+    }
+
+    private SeekBar.OnSeekBarChangeListener seekBarOnChange =
+            new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (isSeekBarMoving) {
+                        mMediaPlayer.seekTo(progress);
+                        Log.i("OnSeekBarChangeListener", "OnProgressChanged");
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    isSeekBarMoving = true;
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    isSeekBarMoving = false;
+                }
+            };
 
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
-            case R.id.play_pause:
+            case R.id.previousButton:
+//                Toast.makeText(this, "previous", Toast.LENGTH_SHORT).show();
+//                int seekto = mMediaPlayer.getCurrentPosition() - STEP_VALUE;
+//                if (seekto < 0)
+//                    seekto = 0;
+//                mMediaPlayer.pause();
+//                mMediaPlayer.seekTo(seekto);
+//                mMediaPlayer.start();
+
+                break;
+            case R.id.playPauseButton:
                 if(isPlaying) {
-                    mPlayPauseButton.setImageDrawable(mPauseDrawable);
+                    mPlayPauseButton.setImageDrawable(mPlayDrawable);
                     mMediaPlayer.pause();
                     isPlaying = false;
                 } else {
-                    mPlayPauseButton.setImageDrawable(mPlayDrawable);
+                    mPlayPauseButton.setImageDrawable(mPauseDrawable);
                     mMediaPlayer.start();
                     isPlaying = true;
                 }
                 break;
+            default:
+                break;
         }
     }
+
 }

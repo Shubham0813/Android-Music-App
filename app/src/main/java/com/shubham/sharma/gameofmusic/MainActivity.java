@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private Audio mCurrentAudio;
-    private List<Audio> mAudioList;
+    public List<Audio> mAudioList;
     private RecyclerView recyclerView;
     private RecyclerView_Adapter adapter;
 
@@ -148,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
 
                 mCurrentAudio = audio;
                 mAudioList = Audio.listAll(Audio.class);
-                adapter.notifyDataSetChanged();
+
+                adapter.list.add(audio);
+                adapter.notifyItemInserted((mAudioList.size()-1));
             }
         }
     }

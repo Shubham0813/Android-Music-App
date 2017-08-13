@@ -110,7 +110,7 @@
                 android:layout_height="48dp">
 
                 <ImageView
-                    android:id="@+id/prev"
+                    android:id="@+id/previousButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -118,7 +118,7 @@
                     android:src="@drawable/ic_skip_previous_white_48dp" />
 
                 <ImageView
-                    android:id="@+id/play_pause"
+                    android:id="@+id/playPauseButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -126,7 +126,7 @@
                     android:src="@drawable/uamp_ic_pause_white_48dp" />
 
                 <ImageView
-                    android:id="@+id/next"
+                    android:id="@+id/nextButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
