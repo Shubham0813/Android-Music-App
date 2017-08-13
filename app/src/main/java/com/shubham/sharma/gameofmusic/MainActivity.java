@@ -9,7 +9,9 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -21,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,12 +37,16 @@ import com.orm.SugarDb;
 
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
+    @BindView(R.id.coordinatorLayout)
+    CoordinatorLayout mCoordinatorLayout;
+
     private Audio mCurrentAudio;
-    public List<Audio> mAudioList;
+    private List<Audio> mAudioList;
     private RecyclerView recyclerView;
     private RecyclerView_Adapter adapter;
 
@@ -89,16 +96,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            recyclerView.addOnItemTouchListener(
-                    new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
-                        @Override public void onItemClick(View view, int position) {
-                            Intent intent = new Intent(getApplicationContext(), MusicPlayerActivity.class);
-                            //intent.putExtra("Song", mAudioList.get(position));
-                            intent.putExtra("Song", mAudioList.get(position).getId());
-                            startActivity(intent);
-                        }
-                    })
-            );
+//            recyclerView.addOnItemTouchListener(
+//                    new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+//                        @Override public void onItemClick(View view, int position) {
+//                            Intent intent = new Intent(getApplicationContext(), MusicPlayerActivity.class);
+//                            //intent.putExtra("Song", mAudioList.get(position));
+//                            intent.putExtra("Song", mAudioList.get(position).getId());
+//                            startActivity(intent);
+//                        }
+//                    })
+//            );
+
+            ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
+                    new ItemTouchHelper.SimpleCallback(0,
+                            ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                @Override
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                      RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                    Audio.delete(mAudioList.get(viewHolder.getAdapterPosition()));
+                    adapter.list.remove(viewHolder.getAdapterPosition());
+                    adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+
+                    Snackbar snackbar = Snackbar
+                            .make(mCoordinatorLayout, "Song Deleted", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+
+                }
+            };
+
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+            itemTouchHelper.attachToRecyclerView(recyclerView);
         }
     }
 
@@ -278,5 +311,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

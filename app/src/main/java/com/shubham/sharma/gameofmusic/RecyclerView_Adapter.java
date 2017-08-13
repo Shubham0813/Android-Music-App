@@ -2,13 +2,17 @@ package com.shubham.sharma.gameofmusic;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +37,51 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.title.setText(list.get(position).getTitle());
+
+        holder.title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MusicPlayerActivity.class);
+                intent.putExtra("Song", list.get(position).getId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        });
+
+        holder.itemOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Show Popup Menu here", Toast.LENGTH_SHORT).show();
+                  //creating a popup menu
+//                PopupMenu popup = new PopupMenu(context, holder.itemOptions);
+                //inflating menu from xml resource
+//                popup.inflate(R.menu.options_menu);
+//                //adding click listener
+//                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        switch (item.getItemId()) {
+//                            case R.id.menu1:
+//                                //handle menu1 click
+//                                break;
+//                            case R.id.menu2:
+//                                //handle menu2 click
+//                                break;
+//                            case R.id.menu3:
+//                                //handle menu3 click
+//                                break;
+//                        }
+//                        return false;
+//                    }
+//                });
+//                //displaying the popup
+//                popup.show();
+
+            }
+        });
     }
 
     @Override
@@ -54,12 +100,14 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder> {
 class ViewHolder extends RecyclerView.ViewHolder {
 
     TextView title;
+    TextView itemOptions;
     ImageView play_pause;
 
     ViewHolder(View itemView) {
         super(itemView);
         title = (TextView) itemView.findViewById(R.id.title);
         play_pause = (ImageView) itemView.findViewById(R.id.play_pause);
+        itemOptions = (TextView) itemView.findViewById(R.id.textViewOptions);
     }
 
 
