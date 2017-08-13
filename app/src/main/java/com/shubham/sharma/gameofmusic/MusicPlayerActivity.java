@@ -1,5 +1,6 @@
 package com.shubham.sharma.gameofmusic;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +21,9 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,25 +54,34 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     @BindView(R.id.previousButton)
     ImageView mPreviousButton;
 
+    @BindView(R.id.rewindButton)
+    ImageView mRewindButton;
+
+
     @BindView(R.id.playPauseButton)
     ImageView mPlayPauseButton;
+
+    @BindView(R.id.fastForwardButton)
+    ImageView mFastForwardButton;
 
     @BindView(R.id.nextButton)
     ImageView mNextButton;
 
     private Audio mAudio;
+    private ArrayList<Audio> mAudioList;
+    private int mCurrentIndex;
     private MediaPlayer mMediaPlayer;
-    private boolean isPlaying = true;
 
     private Drawable mPlayDrawable;
     private Drawable mPauseDrawable;
-
     private Handler mHandler = new Handler();
+
+
+    private boolean isSeekBarMoving;
+    private boolean isPlaying = true;
 
     private static final int UPDATE_FREQUENCY = 500;
     private static final int STEP_VALUE = 4000;
-
-    private boolean isSeekBarMoving;
 
     private static final String LOG_TAG = MusicPlayerActivity.class.getCanonicalName();
 
@@ -85,40 +99,39 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
         ButterKnife.bind(this);
 
+        View decorView = getWindow().getDecorView();
+
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         mPlayDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
         mPauseDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
 
-        mAudio = getIntent().getParcelableExtra("Song");
-        Log.d(LOG_TAG, mAudio.toString());
+        mAudioList = (ArrayList<Audio>) Audio.listAll(Audio.class);
 
-        mImageView.setImageBitmap( BitmapFactory.decodeByteArray(mAudio.getImage(), 0,
-                mAudio.getImage().length));
-        mTitleView.setText(mAudio.getTitle());
-        mArtistView.setText(mAudio.getArtist());
-        mAlbumView.setText(mAudio.getAlbum());
-        long durationInMS = Long.parseLong(mAudio.getDuration());
-        double durationInMin = ((double) durationInMS / 1000.0) / 60.0;
-        durationInMin = new BigDecimal(Double.toString(durationInMin)).
-                setScale(2, BigDecimal.ROUND_UP).doubleValue();
-
-        mStart.setText(R.string.song_start_duration);
-        mEnd.setText("" + durationInMin);
+        long mAudioId = getIntent().getLongExtra("Song", 0);
+        mAudio = Audio.findById(Audio.class, mAudioId);
+        mCurrentIndex = mAudioList.indexOf(mAudio);
 
         mSeekBar.setOnSeekBarChangeListener(seekBarOnChange);
-        mPlayPauseButton.setOnClickListener(this);
+
         mPreviousButton.setOnClickListener(this);
+        mRewindButton.setOnClickListener(this);
+        mPlayPauseButton.setOnClickListener(this);
+        mFastForwardButton.setOnClickListener(this);
+        mNextButton.setOnClickListener(this);
 
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnCompletionListener(onCompletion);
         mMediaPlayer.setOnErrorListener(onError);
+
         startPlay();
     }
 
     private void startPlay() {
-        Log.d(LOG_TAG, "playing");
-
+        setupMusicDetails();
         mSeekBar.setProgress(0);
-
         mMediaPlayer.stop();
         mMediaPlayer.reset();
 
@@ -133,7 +146,19 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         }
         mSeekBar.setMax(mMediaPlayer.getDuration());
         updatePosition();
-        // isStarted = true;
+    }
+
+    private void setupMusicDetails(){
+        mImageView.setImageBitmap( BitmapFactory.decodeByteArray(mAudio.getImage(), 0,
+                mAudio.getImage().length));
+        mTitleView.setText(mAudio.getTitle());
+        mArtistView.setText(mAudio.getArtist());
+        mAlbumView.setText(mAudio.getAlbum());
+
+        mStart.setText(R.string.song_start_duration);
+
+        mEnd.setText(DateUtils.formatElapsedTime(Integer.parseInt(mAudio.getDuration())/1000));
+
     }
 
     private void stopPlay() {
@@ -171,6 +196,8 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
 
     private void updatePosition() {
+        int currentDuration = mMediaPlayer.getCurrentPosition();
+        mStart.setText(DateUtils.formatElapsedTime(currentDuration/1000));
         mHandler.removeCallbacks(updatePositionRunnable);
         mSeekBar.setProgress(mMediaPlayer.getCurrentPosition());
         mHandler.postDelayed(updatePositionRunnable, UPDATE_FREQUENCY);
@@ -201,14 +228,21 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.previousButton:
-//                Toast.makeText(this, "previous", Toast.LENGTH_SHORT).show();
-//                int seekto = mMediaPlayer.getCurrentPosition() - STEP_VALUE;
-//                if (seekto < 0)
-//                    seekto = 0;
-//                mMediaPlayer.pause();
-//                mMediaPlayer.seekTo(seekto);
-//                mMediaPlayer.start();
-
+                if((mCurrentIndex - 1) < 0)
+                    mCurrentIndex = mAudioList.size() - 1;
+                else {
+                    mCurrentIndex--;
+                }
+                mAudio = mAudioList.get(mCurrentIndex);
+                startPlay();
+                break;
+            case R.id.rewindButton:
+                int rewindDuration = mMediaPlayer.getCurrentPosition() - STEP_VALUE;
+                if (rewindDuration < 0)
+                    rewindDuration = 0;
+                mMediaPlayer.pause();
+                mMediaPlayer.seekTo(rewindDuration);
+                mMediaPlayer.start();
                 break;
             case R.id.playPauseButton:
                 if(isPlaying) {
@@ -220,6 +254,23 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                     mMediaPlayer.start();
                     isPlaying = true;
                 }
+                break;
+            case R.id.fastForwardButton:
+                int fastForwardDuration = mMediaPlayer.getCurrentPosition() + STEP_VALUE;
+                if (fastForwardDuration > mMediaPlayer.getDuration())
+                    fastForwardDuration = mMediaPlayer.getDuration();
+                mMediaPlayer.pause();
+                mMediaPlayer.seekTo(fastForwardDuration);
+                mMediaPlayer.start();
+                break;
+            case R.id.nextButton:
+                if((mCurrentIndex + 1) == mAudioList.size())
+                    mCurrentIndex = 0;
+                else {
+                    mCurrentIndex++;
+                }
+                mAudio = mAudioList.get(mCurrentIndex);
+                startPlay();
                 break;
             default:
                 break;

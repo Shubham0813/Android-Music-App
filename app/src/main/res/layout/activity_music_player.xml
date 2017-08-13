@@ -118,12 +118,28 @@
                     android:src="@drawable/ic_skip_previous_white_48dp" />
 
                 <ImageView
+                    android:id="@+id/rewindButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_rewind" />
+
+                <ImageView
                     android:id="@+id/playPauseButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="1"
                     android:background="?selectableItemBackgroundBorderless"
                     android:src="@drawable/uamp_ic_pause_white_48dp" />
+
+                <ImageView
+                    android:id="@+id/fastForwardButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_fast_forward" />
 
                 <ImageView
                     android:id="@+id/nextButton"

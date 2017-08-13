@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
                     new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
                         @Override public void onItemClick(View view, int position) {
                             Intent intent = new Intent(getApplicationContext(), MusicPlayerActivity.class);
-                            intent.putExtra("Song", mAudioList.get(position));
+                            //intent.putExtra("Song", mAudioList.get(position));
+                            intent.putExtra("Song", mAudioList.get(position).getId());
                             startActivity(intent);
                         }
                     })
