@@ -40,7 +40,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+/*
+* JOEL MATSU - 7711831 - java class for the main activity
+* */
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     @BindView(R.id.coordinatorLayout)
     CoordinatorLayout mCoordinatorLayout;
@@ -59,23 +63,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
 
+    //JOEL MATSU - 7711831 - App initialization, where the execution starts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //Code auto-generated, just kept unchanged
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
+        //Initializations
         initSugarDB();
         initRecyclerView();
         initDrawer();
 
         ButterKnife.bind(this);
 
+        //Initializations
         initMusicComponents();
     }
 
+    //BURAK KARAHAN - 7711062 - SugarORM/SQL Lite database framework setup
     private void initSugarDB() {
         SugarDb db = new SugarDb(this);
         db.onCreate(db.getDB());
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
     }
 
+    //JOEL MATSU - 7711831 - Setup the main view with list of musics
     private void initRecyclerView() {
         mAudioList = Audio.listAll(Audio.class);
 
@@ -135,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //AMRITPAL SINGH - 7758071 - Drawer and Side Menu setup
     private void initDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -151,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshDrawerItems();
     }
 
+    //JOEL MATSU - 7711831 - setup the collapsing image at the top of songs
     private void initMusicComponents() {
         mMetaDataRetreiver = new MediaMetadataRetriever();
         ImageView collapsingImageView = (ImageView) findViewById(R.id.collapsingImageView);
@@ -158,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         collapsingImageView.setImageDrawable(image);
     }
 
+    //JOEL MATSU - 7711831 - open the file explorer to load songs from the phone to the library
     public void onclick_loadSongFromLibrary(View view) {
 
         if(ContextCompat.checkSelfPermission(this,
@@ -171,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //JOEL MATSU - 7711831 - create intent to open file explorer
     private void startFileChooser() {
         Intent intent;
         intent = new Intent();
@@ -179,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(Intent.createChooser(intent, "Choose audio file"), REQUEST_CODE_PICK_SOUND_FILE);
     }
 
+    //JOEL MATSU - 7711831 - request permission to open file explorer
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -186,10 +199,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case REQUEST_READ_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // If you get permission, launch the camera to capture picture
+                    //Permission granted
                     startFileChooser();
                 } else {
-                    // If you do not get permission, show a Toast
+                    //Permission denied
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -197,13 +210,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //JOEL MATSU - 7711831 - handle the file returned by the file explorer
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE_PICK_SOUND_FILE && resultCode == Activity.RESULT_OK){
+
             if ((data != null) && (data.getData() != null)){
+
+                //Get the song URI
                 Uri audioFileUri = data.getData();
 
+                //Extract the song attributes and create a new Audio
                 mMetaDataRetreiver.setDataSource(this, audioFileUri);
                 Audio audio = new Audio( audioFileUri,
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
@@ -213,8 +233,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         mMetaDataRetreiver.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 );
 
+                //BURAK KARAHAN - 7711062 - persist the new audio object
                 audio.save();
 
+                //Update the screen items
                 mCurrentAudio = audio;
                 mAudioList = Audio.listAll(Audio.class);
 
@@ -224,10 +246,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //AMRITPAL SINGH - 7758071 - handling the drawer menu actions
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
+        //Create a new Playlist
         switch (id) {
             case R.id.nav_new_playlist:
                 openAlertForUserInput();
@@ -243,11 +267,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
+    //AMRITPAL SINGH - 7758071 - update the drawer menu with all persisted playlist
     private void refreshDrawerItems() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         Menu m = navigationView.getMenu();
 
+        //Get all persisted playlist and update the drawer menu
         for (Playlist p: Playlist.listAll(Playlist.class)) {
             if (notInMenu(p, m)) {
                 m.add(p.name);
@@ -257,9 +283,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
+        //Invalidate for refresh
         navigationView.invalidate();
     }
 
+    //AMRITPAL SINGH - 7758071 - items not in menu yet
     private boolean notInMenu(Playlist p, Menu m) {
         for (int i = 0; i < m.size(); i++) {
             if (m.getItem(i).getTitle().equals(p.name))
@@ -268,12 +296,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    //AMRITPAL SINGH - 7758071 - Open alert dialog so the user can provide the playlist name
     private void openAlertForUserInput() {
         AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 
         //Alert's title and label
-        alert.setTitle("Adding new node.");
-        alert.setMessage("Description");
+        alert.setTitle("New playlist");
+        alert.setMessage("Name");
 
         //Setup the Alert Edit for the user's input
         final EditText edtNewItem = new EditText(MainActivity.this);
@@ -284,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int whichButton) {
                 mNewPlaylist = edtNewItem.getText().toString();
 
-                //Create a new item with the user input
+                //Create a new playlist with the user input
                 Playlist playlist = new Playlist(mNewPlaylist);
                 playlist.save();
                 refreshDrawerItems();
@@ -303,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alert.show();
     }
 
+    //AMRITPAL SINGH - 7758071 - setup the back button to close drawer before closing app
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -313,6 +343,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //JOEL MATSU - 7711831 - destructor
     @Override
     protected void onDestroy() {
         super.onDestroy();
