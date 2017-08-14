@@ -27,12 +27,14 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder>  {
 
     List<Audio> list;
     List<Audio> selectedAudios;
+    String currentPlaylist;
     Context context;
 
     public RecyclerView_Adapter(List<Audio> list, Context context) {
         this.list = list;
         this.context = context;
         selectedAudios = new ArrayList<>();
+        currentPlaylist = "";
     }
 
     @Override
@@ -75,6 +77,7 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder>  {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, MusicPlayerActivity.class);
+                intent.putExtra("Playlist", currentPlaylist);
                 intent.putExtra("Song", audio.getId());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);

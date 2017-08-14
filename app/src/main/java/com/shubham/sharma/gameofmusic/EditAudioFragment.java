@@ -72,13 +72,19 @@ public class EditAudioFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_audio, container);
 
+        // Bind all views
         ButterKnife.bind(this, view);
 
+        //  Get listener from parent activity
         listener = (EditAudioFragment.OnAudioEditListener) getActivity();
 
+        // Get audio ID from passed bundle
         long audioId = getArguments().getLong("audioId");
+
+        // Get audio object from the database
         mAudio = Audio.findById(Audio.class, audioId);
 
+        // Update all views with audio details
         titleView.setText(mAudio.getTitle());
         artistView.setText(mAudio.getArtist());
         albumView.setText(mAudio.getAlbum());
@@ -86,6 +92,7 @@ public class EditAudioFragment extends DialogFragment {
                 mAudio.getImage().length));
         genreView.setText(mAudio.getGenre());
 
+        // Start file chooser when choose image button clicked
         chooseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +100,7 @@ public class EditAudioFragment extends DialogFragment {
             }
         });
 
+        // Update audio object when save button clicked
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,6 +111,9 @@ public class EditAudioFragment extends DialogFragment {
         return view;
     }
 
+    /***
+     * Thus method starts intent to choose image file
+     */
     private void startFileChooser() {
         Intent intent;
         intent = new Intent();
@@ -111,11 +122,18 @@ public class EditAudioFragment extends DialogFragment {
         startActivityForResult(Intent.createChooser(intent, "Choose audio file"), REQUEST_CODE_PICK_IMAGE_FILE);
     }
 
+    /***
+     * This method gets called when an image file is chosen
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_PICK_IMAGE_FILE && resultCode == Activity.RESULT_OK) {
             if ((data != null) && (data.getData() != null)) {
+                // Get the image and set on imageView
                 Uri selectedImage = data.getData();
                 imageView.setImageURI(selectedImage);
             }
@@ -123,7 +141,11 @@ public class EditAudioFragment extends DialogFragment {
     }
 
 
+    /***
+     * This method updates the audio object with new data and saves it.
+     */
     private void updateAudio() {
+        // Get data from input fields
         String title = titleView.getText().toString();
         String artist = artistView.getText().toString();
         String album = albumView.getText().toString();
@@ -135,6 +157,7 @@ public class EditAudioFragment extends DialogFragment {
 
         String genre = genreView.getText().toString();
 
+        // Update audio object and save
         mAudio.setTitle(title);
         mAudio.setArtist(artist);
         mAudio.setAlbum(album);
@@ -142,7 +165,10 @@ public class EditAudioFragment extends DialogFragment {
         mAudio.setGenre(genre);
         mAudio.save();
 
+        // Call implementing activity's onAudioEdit method
         listener.onAudioEdit();
+
+        // Close the fragment dialog
         dismiss();
     }
 }

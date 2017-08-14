@@ -78,7 +78,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     private Drawable mPauseDrawable;
     private Handler mHandler = new Handler();
 
-
     private boolean isSeekBarMoving;
     private boolean isPlaying = true;
 
@@ -99,53 +98,68 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player);
 
+        // Bind all views
         ButterKnife.bind(this);
 
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        // Get drawables for play and pause buttons
         mPlayDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
         mPauseDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
 
-        mAudioList = (ArrayList<Audio>) Audio.listAll(Audio.class);
+        // Get list of all audios from the database
+        //mAudioList = (ArrayList<Audio>) Audio.listAll(Audio.class);
 
+        // Get the song ID from intent
+        String playlistID = getIntent().getStringExtra("Playlist");
+        if(playlistID.equals("")) {
+            mAudioList = (ArrayList<Audio>) Audio.listAll(Audio.class);
+        } else {
+            mAudioList = (ArrayList<Audio>) Audio.find(Audio.class, "m_playlist = ?", playlistID);
+        }
+
+        // Get the song ID from intent
         long mAudioId = getIntent().getLongExtra("Song", 0);
+
+        // Find the audio from database with ID
         mAudio = Audio.findById(Audio.class, mAudioId);
+
+        // Store index of the audio in list
         mCurrentIndex = mAudioList.indexOf(mAudio);
 
+        // Set change listener on SeekBar
         mSeekBar.setOnSeekBarChangeListener(seekBarOnChange);
 
+        // Set change listener on all buttons
         mPreviousButton.setOnClickListener(this);
         mRewindButton.setOnClickListener(this);
         mPlayPauseButton.setOnClickListener(this);
         mFastForwardButton.setOnClickListener(this);
         mNextButton.setOnClickListener(this);
 
+        // Create object new media player and set listeners
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnCompletionListener(onCompletion);
         mMediaPlayer.setOnErrorListener(onError);
 
+        // Start playing media by calling startPlay method
         startPlay();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void startPlay() {
+        // Setup music details on UI controls
         setupMusicDetails();
+
+        // Reset seekbar
         mSeekBar.setProgress(0);
+
+        // Stop and reset media player
         mMediaPlayer.stop();
         mMediaPlayer.reset();
 
         try {
+            // Set data source on media player
             mMediaPlayer.setDataSource(this, mAudio.getData());
+
+            // Start the media player
             mMediaPlayer.prepare();
             mMediaPlayer.start();
         } catch (IllegalArgumentException e) {
@@ -157,6 +171,9 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         updatePosition();
     }
 
+    /***
+     * This method gets data from audio object and displays it on UI views
+     */
     private void setupMusicDetails(){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
@@ -176,6 +193,9 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    /***
+     * Stop playing media player
+     */
     private void stopPlay() {
         mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -185,6 +205,9 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
         isPlaying = false;
     }
 
+    /***
+     * Release media player when activity is destroyed
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -210,6 +233,9 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
     };
 
 
+    /***
+     * Update SeekBar position as song is played
+     */
     private void updatePosition() {
         int currentDuration = mMediaPlayer.getCurrentPosition();
         mStart.setText(DateUtils.formatElapsedTime(currentDuration/1000));
@@ -223,6 +249,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (isSeekBarMoving) {
+                        // Update media player when SeekBar progress changed
                         mMediaPlayer.seekTo(progress);
                         Log.i("OnSeekBarChangeListener", "OnProgressChanged");
                     }
@@ -239,10 +266,15 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 }
             };
 
+    /***
+     * OnClick code for different buttons
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.previousButton:
+                // Play previous song in the list
                 if((mCurrentIndex - 1) < 0)
                     mCurrentIndex = mAudioList.size() - 1;
                 else {
@@ -252,6 +284,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 startPlay();
                 break;
             case R.id.rewindButton:
+                // Seek media player to 5 sec before
                 int rewindDuration = mMediaPlayer.getCurrentPosition() - STEP_VALUE;
                 if (rewindDuration < 0)
                     rewindDuration = 0;
@@ -260,6 +293,8 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 mMediaPlayer.start();
                 break;
             case R.id.playPauseButton:
+                // If audio is playing, pause media player and update button image to play drawable,
+                // else, start playing and update button image to pause drawable
                 if(isPlaying) {
                     mPlayPauseButton.setImageDrawable(mPlayDrawable);
                     mMediaPlayer.pause();
@@ -271,6 +306,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 }
                 break;
             case R.id.fastForwardButton:
+                // Add 5 seconds to duration and seek media player to updated duration
                 int fastForwardDuration = mMediaPlayer.getCurrentPosition() + STEP_VALUE;
                 if (fastForwardDuration > mMediaPlayer.getDuration()) {
                     fastForwardDuration = mMediaPlayer.getDuration();
@@ -284,6 +320,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 }
                 break;
             case R.id.nextButton:
+                // Play next song in the list
                 if((mCurrentIndex + 1) == mAudioList.size())
                     mCurrentIndex = 0;
                 else {

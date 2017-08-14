@@ -6,8 +6,13 @@ import android.os.Parcelable;
 
 import com.orm.SugarRecord;
 
-
 public class Audio extends SugarRecord {
+
+/*
+* BURAK KARAHAN - 7711062 - Java class to represent every music.
+* Extends SugarRecord which is the persistence framework
+* so the object is saved on SQL Lite with no SQL manipulation.
+* */
 
     String mData;
     String mTitle;

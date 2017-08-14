@@ -48,19 +48,31 @@ public class ChoosePlaylistFragmentDialog extends DialogFragment {
 
         playlists = Playlist.listAll(Playlist.class);
 
+        // Get audio ID from bundle
         final long audioId =  getArguments().getLong("audioId");
+
+        // Get audio from database by ID
         final Audio audio = Audio.findById(Audio.class, audioId);
 
+        // Create adapter with list of all existing playlists
         final ArrayAdapter adapter = new ArrayAdapter<Playlist>(getActivity(),
                 android.R.layout.simple_list_item_1, playlists);
 
+        // Find list view and set adapter
         listView = (ListView) view.findViewById(R.id.choose_playlist_list_view);
         listView.setAdapter(adapter);
+
+        // Add onclick listener on list view
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get chosen playlist
                 Playlist playlist = (Playlist) adapter.getItem(position);
+
+                // Call parent activity's callback method passing the playlist ID
                 listener.onFinishChoosingPlaylist(audioId, playlist.getId());
+
+                // Close the fragment dialog
                 dismiss();
             }
         });
