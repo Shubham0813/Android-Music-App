@@ -101,7 +101,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
 
         ButterKnife.bind(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mPlayDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
         mPauseDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
@@ -296,5 +296,4 @@ public class MusicPlayerActivity extends AppCompatActivity implements View.OnCli
                 break;
         }
     }
-
 }

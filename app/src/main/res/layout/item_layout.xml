@@ -4,20 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="6dp"
-    android:elevation="100dp">
+    android:elevation="100dp"
+    android:background="?android:selectableItemBackground">
 
     <!--android:background="#00bcd4"-->
     <LinearLayout
+        android:id="@+id/item_layout_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/cardview_light_background"
         android:orientation="horizontal"
         android:padding="10dp"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:clickable="true">
 
         <ImageButton
             android:id="@+id/play_pause"
-            android:layout_width="45dp"
+            android:layout_width="0dp"
             android:layout_height="45dp"
             android:src="@android:drawable/ic_media_play"
             android:layout_gravity="center_vertical|center_horizontal"
@@ -28,25 +31,36 @@
             android:layout_weight="0.1"
             android:backgroundTint="@color/icons" />
 
+        <!--<ImageView-->
+            <!--android:id="@+id/album_image_view"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="45dp"-->
+            <!--android:layout_weight="0.1"-->
+            <!--/>-->
+
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="0.8"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/primary_text"
-            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
             android:foregroundGravity="center_horizontal"
-            android:textStyle="bold|italic" />
+            android:fontFamily="sans-serif-condensed"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:background="?android:selectableItemBackground"/>
 
         <TextView
             android:id="@+id/textViewOptions"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
             android:layout_weight="0.1"
             android:text="&#8942;"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:gravity="center_vertical"
             android:textAppearance="?android:textAppearanceMedium" />
 
 

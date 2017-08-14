@@ -53,7 +53,19 @@
         android:layout_margin="@dimen/fab_margin"
         android:onClick="onclick_loadSongFromLibrary"
         android:src="@android:drawable/stat_sys_headset"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|end" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddToPlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="onclick_addSongsToPlaylist"
+        android:src="@drawable/ic_playlist_music_black_24dp"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_anchor="@+id/recyclerview"
         app:layout_anchorGravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>

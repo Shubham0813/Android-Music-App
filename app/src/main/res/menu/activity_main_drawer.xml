@@ -8,6 +8,10 @@
             android:title="New Playlist" />
     </group>
 
+    <item android:id="@+id/navigate_to_library"
+        android:title="Library"
+        android:icon="@drawable/ic_playlist_music_black_24dp"/>
+
     <item android:title="Playlists">
         <menu>
         </menu>

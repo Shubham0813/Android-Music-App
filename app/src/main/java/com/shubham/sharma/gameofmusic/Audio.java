@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import com.orm.SugarRecord;
 
 
-public class Audio extends SugarRecord implements Parcelable {
+public class Audio extends SugarRecord {
 
     String mData;
     String mTitle;
@@ -15,16 +15,26 @@ public class Audio extends SugarRecord implements Parcelable {
     String mArtist;
     byte[] mImage;
     String mDuration;
+    Playlist mPlaylist;
+    String mGenre;
+    boolean isSelected;
 
     public Audio(){}
 
-    public Audio(Uri data, String title, String album, String artist,byte[] image, String duration) {
+    public Audio(Uri data, String title, String album, String artist,byte[] image, String duration,
+                 String genre) {
         this.mData = data.toString();
         this.mTitle = title;
         this.mAlbum = album;
         this.mArtist = artist;
         this.mImage = image;
         this.mDuration = duration;
+        this.mPlaylist = null;
+        if(genre == null || genre.isEmpty())
+            this.mGenre = "";
+        else
+            this.mGenre = genre;
+        this.isSelected = false;
     }
 
     @Override
@@ -76,43 +86,13 @@ public class Audio extends SugarRecord implements Parcelable {
         return mDuration;
     }
 
-    // Parcelling part
-    public Audio(Parcel parcel){
-        mData = parcel.readString();
-        mTitle = parcel.readString();
-        mAlbum = parcel.readString();
-        mArtist = parcel.readString();
-        mImage = new byte[parcel.readInt()];
-        parcel.readByteArray(mImage);
-        mDuration = parcel.readString();
+    public Playlist getPlaylist() {
+        return mPlaylist;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setPlaylist(Playlist playlist) {
+        this.mPlaylist = playlist;
     }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(mData);
-        parcel.writeString(mTitle);
-        parcel.writeString(mAlbum);
-        parcel.writeString(mArtist);
-        parcel.writeInt(mImage.length);
-        parcel.writeByteArray(mImage);
-        parcel.writeString(mDuration);
-    }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Audio createFromParcel(Parcel in) {
-            return new Audio(in);
-        }
-
-        public Audio[] newArray(int size) {
-            return new Audio[size];
-        }
-    };
 
     @Override
     public boolean equals(Object o) {
@@ -122,5 +102,13 @@ public class Audio extends SugarRecord implements Parcelable {
         Audio audio = (Audio) o;
         if(this.getId() == audio.getId()) return true;
         return false;
+    }
+
+    public String getGenre() {
+        return mGenre;
+    }
+
+    public void setGenre(String genre) {
+        mGenre = genre;
     }
 }
