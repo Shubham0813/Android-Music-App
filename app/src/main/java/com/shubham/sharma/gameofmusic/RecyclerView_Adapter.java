@@ -25,7 +25,7 @@ import java.util.List;
 
 public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder>  {
 
-    List<Audio> list;
+    List<Audio> list = new ArrayList<>();
     List<Audio> selectedAudios;
     String currentPlaylist;
     Context context;

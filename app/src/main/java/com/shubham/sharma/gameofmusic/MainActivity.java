@@ -154,10 +154,11 @@ public class MainActivity extends AppCompatActivity implements
     //JOEL MATSU - 7711831 - Setup the main view with list of musics
     private void initRecyclerView() {
         mAudioList = Audio.listAll(Audio.class);
+        adapter = new RecyclerView_Adapter(new ArrayList<Audio>(), this);
 
         if (mAudioList.size() > 0) {
             recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-            adapter = new RecyclerView_Adapter(mAudioList, this);
+            adapter.list = mAudioList;
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
