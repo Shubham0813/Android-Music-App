@@ -110,7 +110,7 @@ public class Audio extends SugarRecord {
     }
 
     public String getGenre() {
-        return mGenre;
+        return mGenre == null ? "" : mGenre;
     }
 
     public void setGenre(String genre) {

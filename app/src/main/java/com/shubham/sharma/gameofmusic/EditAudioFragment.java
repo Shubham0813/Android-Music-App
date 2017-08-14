@@ -151,9 +151,12 @@ public class EditAudioFragment extends DialogFragment {
         String album = albumView.getText().toString();
 
         Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageInBytes = baos.toByteArray();
+        if (bitmap != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageInBytes = baos.toByteArray();
+            mAudio.setImage(imageInBytes);
+        }
 
         String genre = genreView.getText().toString();
 
@@ -161,7 +164,6 @@ public class EditAudioFragment extends DialogFragment {
         mAudio.setTitle(title);
         mAudio.setArtist(artist);
         mAudio.setAlbum(album);
-        mAudio.setImage(imageInBytes);
         mAudio.setGenre(genre);
         mAudio.save();
 

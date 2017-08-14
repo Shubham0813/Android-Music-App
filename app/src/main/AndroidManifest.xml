@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme">
 
         <meta-data android:name="DATABASE" android:value="8215final.db" />
-        <meta-data android:name="VERSION" android:value="11" />
+        <meta-data android:name="VERSION" android:value="12" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.shubham.sharma.gameofmusic" />
 
@@ -33,7 +33,7 @@
         </activity>
 
         <activity android:name=".MusicPlayerActivity"
-            android:theme="@style/AppTheme.NoActionBarColoredStatusBar"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".MainActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
